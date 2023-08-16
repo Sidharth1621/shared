@@ -1,0 +1,45 @@
+
+sonatype nexus version - 3.x
+
+creating repo
+
+admin -> repositories -> create repo ->name and type (maven,raw,docker) -> releases/snapshots  
+
+types
+	-> maven2 (jar/war files (GAV (groupid , artifactid, version) parameters) as well as txt and metadata files)
+	-> raw (to store txt files, metadata files etc)
+	-> docker (to store images)
+
+rest API call
+
+service/rest/v1/search/
+
+curl -X GET https://devops.upc.biz/nexus/service/rest/v1/search/assets?repository=sangavi&name=sid.txt
+
+--> JSON output
+
+
+diff -->
+maven repositories:
+if txt file stored in maven2 repo like snapshots and releases, JSON output cannot be fetched through rest api call.
+only files with GAV parameters will be fetched through api call.
+
+raw repositories:
+the text file uploaded will automatically contain component name and group , so it can be fetched through rest api call.
+
+snapshots 
+	-> duplicates
+	-> maven hosted repository
+	-> jar/war files
+	-> lower env deployments (dev/jit/sit)
+	
+releases 
+	-> no duplicates
+	-> maven hosted repository
+	-> jar/war files
+	-> higher env deployments (prod/uat)
+
+
+uploading a file to nexus repository ?
+
+curl -u username --upload-file name.txt https://devops.upc.biz/nexus/repository/snapshots/VirginMedia/Digital/Pega/ADT-PEGA-IE/LGDOP/sid/name.txt
