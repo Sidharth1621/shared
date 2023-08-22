@@ -1,0 +1,41 @@
+pipeline {
+    agent { label 'shared-2' }
+    
+    
+	stages {
+		stage('Code Checkout') {
+			steps {
+				script {
+					
+					
+					def GIT_CRED='eds-internal-user'
+					def GIT_REPO='git-url'
+					checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: '']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${GIT_CRED}", url: "${GIT_REPO}"]]])
+					
+					
+				}
+			}
+		}
+		stage('Deploy files using ansible') {
+			steps {
+				script {
+					
+                            withCredentials([usernamePassword(credentialsId: 'jenkins-nexus-reader', passwordVariable: 'Nexus_PWD', usernameVariable: 'Nexus_USR')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: 'eds_dsuser', keyFileVariable: 'privatekey')]) {
+      
+        						def ansible = docker.image("registry-devops.upc.biz/accenture/ansible")
+        
+            							ansible.inside('--net=lgadop') {
+            
+            							sh '''ansible-playbook -i host-file-SB --private-key=${privatekey} -vvv --extra-vars "workspace=${WORKSPACE} target=${target} version=${version} USERNAME=${Nexus_USR} PASSWORD=${Nexus_PWD}" ansible-file-name_SB.yml'''
+            							
+            							}
+    							}
+    						}
+				}
+			}
+		}
+		
+    
+	}
+}
