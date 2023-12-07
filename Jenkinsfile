@@ -12,7 +12,7 @@ stages {
 				script{
 					
 					def GIT_CRED='git-credentials'
-					def GIT_REPO_URL='git-url'
+					def GIT_REPO_URL=<git-url>
 					checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${GIT_CRED}", url: "${GIT_REPO_URL}"]]])
 					}
 				}
